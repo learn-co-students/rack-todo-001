@@ -1,9 +1,11 @@
 # We need a few superpowers for this example. Obviously,
 require 'rack'
+require 'rack/server'
+require 'yaml'
 require 'pry'
 
 # Ignore this line.
-Signal.trap('INT') {Rack::Handler::WEBrick.shutdown}
+#Signal.trap('INT') {Rack::Handler::WEBrick.shutdown}
 
 # Now let's grab the superpower twitter.
 
@@ -17,12 +19,19 @@ Signal.trap('INT') {Rack::Handler::WEBrick.shutdown}
 
 require 'twitter'
 
-TWITTER = Twitter::REST::Client.new do |config|
-  # Go to https://dev.twitter.com/apps and create a new twitter application and generate these keys and tokens
-  config.consumer_key = "consumer key here"
-  config.consumer_secret = "consumer secret here"
-  config.access_token = "access token here"
-  config.access_token_secret = "token secret here"
+class TwitterApi
+  attr_reader :client
+
+  def initialize
+    creds = YAML.load_file(File.join(__dir__, 'application.yml'))
+    @client = Twitter::REST::Client.new do |config|
+      # Go to https://dev.twitter.com/apps and create a new twitter application and generate these keys and tokens
+      config.consumer_key        = creds['CONSUMER_KEY']
+      config.consumer_secret     = creds['CONSUMER_SECRET']
+      config.access_token        = creds['ACCESS_TOKEN']
+      config.access_token_secret = creds['ACCESS_TOKEN_SECRET']
+    end
+  end
 end
 
 # What do you think is going on up there? Well the twitter gem gives us a class,
@@ -38,7 +47,7 @@ class App
 
     # So far we've created an HTML string. Now the fun part. 
     # Let's search twitter.
-    twitter_search_results = TWITTER.search("flatironschool")
+    twitter_search_results = TwitterApi.new.client.search("flatironschool")
     twitter_search_results.each do |tweet|
       # So now we have these individual tweet objects, twitter statuses.
       html << "<li>#{tweet.user.name} says: #{tweet.text}</li>"
@@ -52,7 +61,8 @@ end
 # Okay and now our Rack Handler to actually load the application
 # on port 3002 of our computer.
 
-Rack::Handler::WEBrick.run(App.new, {:Port => 3002})
+# Rack::Handler::WEBrick.run(App.new, {:Port => 3002})
+Rack::Server.start :app => App.new
 
 # You should see the Rack output letting you know you have a server
 # running, this time on port 3002.
