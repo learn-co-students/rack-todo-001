@@ -19,7 +19,7 @@ require 'twitter'
 
 TWITTER = Twitter::REST::Client.new do |config|
   # Go to https://dev.twitter.com/apps and create a new twitter application and generate these keys and tokens
-  config.consumer_key = "consumer key here"
+  config.consumer_key = "consumer key"
   config.consumer_secret = "consumer secret here"
   config.access_token = "access token here"
   config.access_token_secret = "token secret here"
