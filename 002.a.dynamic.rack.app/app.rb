@@ -23,13 +23,13 @@ class App
     seconds_in_17_days = 1468800 # I hope that's right.
 
     # Here comes a HERE doc. It's just a ruby string.
-    response = <<-TXT
+    response = "
     Hi Ruby 006. It's #{Time.now}. 
     Hit refresh and realize you've been learning Ruby
     since #{(Time.now - seconds_in_17_days)}.
     How many days is that? 17? With weekends? And look what you're doing.
     Building a dynamic web application. I wonder what else you're capable of.
-    TXT
+    "
 
     # And now instead of a static string in the body of the response,
     # we'll send our variable, response. And every request, it's value
@@ -46,7 +46,7 @@ Rack::Handler::WEBrick.run(App.new, {:Port => 3001})
 
 # You should see the Rack output letting you know you have a server
 # running, this time on port 3001.
-
+a
 # Open your browser again to http://localhost:3001
 
 # And every time you hit refresh in your browser, you've been learning
